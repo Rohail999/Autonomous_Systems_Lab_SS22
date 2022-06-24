@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+
+chan approach, changelane, slowspeed, infront, drive, near, far;</declaration>
+	<template>
+		<name x="5" y="5">MasterTruck</name>
+		<declaration>// Place local declarations here.
+
+clock x;</declaration>
+		<location id="id0" x="110" y="204">
+			<name x="85" y="153">infront</name>
+			<label kind="invariant" x="100" y="221">x &lt;= 5</label>
+		</location>
+		<location id="id1" x="263" y="-34">
+			<name x="253" y="-68">near</name>
+			<label kind="invariant" x="253" y="-17">x &lt;= 5</label>
+		</location>
+		<location id="id2" x="-68" y="-34">
+			<name x="-78" y="-68">far</name>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-59" y="85">changelane!</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="128" y="51">x &gt;= 2</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="8" y="-51">approach!</label>
+			<label kind="assignment" x="25" y="-34">x := 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>System</name>
+		<declaration>
+clock y;
+</declaration>
+		<location id="id3" x="-119" y="17">
+			<name x="-129" y="-17">one</name>
+			<label kind="invariant" x="-129" y="34">y &lt;= 1</label>
+		</location>
+		<location id="id4" x="17" y="170">
+			<name x="7" y="136">two</name>
+		</location>
+		<location id="id5" x="161" y="17">
+			<name x="151" y="-17">three</name>
+			<label kind="invariant" x="151" y="34">y &lt;= 1</label>
+		</location>
+		<location id="id6" x="17" y="-119">
+			<name x="7" y="-153">zero</name>
+		</location>
+		<init ref="id6"/>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="guard" x="35" y="-85">y == 1</label>
+			<label kind="synchronisation" x="35" y="-68">drive!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="34" y="76">changelane?</label>
+			<label kind="assignment" x="35" y="93">y := 0</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-92" y="59">y == 1</label>
+			<label kind="synchronisation" x="-92" y="76">slowspeed!</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-92" y="-68">approach?</label>
+			<label kind="assignment" x="-92" y="-51">y := 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Platoon</name>
+		<declaration>
+clock z;</declaration>
+		<location id="id7" x="-161" y="76">
+			<name x="-153" y="51">KeepDriving</name>
+			<label kind="invariant" x="-171" y="93">z &lt;= 1</label>
+		</location>
+		<location id="id8" x="127" y="76">
+			<name x="144" y="68">Stop</name>
+		</location>
+		<location id="id9" x="127" y="-93">
+			<name x="117" y="-127">SlowDown</name>
+			<label kind="invariant" x="136" y="-76">z &lt;=  1</label>
+		</location>
+		<location id="id10" x="-161" y="-93">
+			<name x="-171" y="-127">Driving</name>
+		</location>
+		<init ref="id10"/>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id10"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-34" y="59">changelane?</label>
+			<label kind="assignment" x="-17" y="76">z := 0</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-59" y="-110">slowspeed?</label>
+			<label kind="assignment" x="-42" y="-93">z := 0</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+ProcessMasterTruck = MasterTruck();
+Processsystem = System();
+Processplatoon = Platoon();
+
+// List one or more processes to be composed into a system.
+system ProcessMasterTruck, Processsystem, Processplatoon;
+    </system>
+	<queries>
+	</queries>
+</nta>
